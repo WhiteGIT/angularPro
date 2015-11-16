@@ -1,0 +1,13 @@
+<section class="container  hello">
+    <h1>Hello World</h1>
+    <span class="h4" ng-bind="Index.title"></span>
+    <div class="row hello-content">
+        <div class="col-md-3" ng-repeat="item in Index.rows">
+            <a ng-if="item.url"  href="{{item.href}}"  class="thumbnail" style="background:{{item.background}}" alt="{{item.title}}"><span class="h2">{{item.title}}</span></a>
+             <a ng-if="!item.url" href="#" ui-sref="{{item.href}}"  class="thumbnail" style="background:{{item.background}}" alt="{{item.title}}">
+                <span class="h2">{{item.title}}</span>
+            </a>
+        </div>
+ 
+    </div>
+</section>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="angularapp">
+<head>
+ 	<link href="/app/static/css/bootstrap.css" rel="stylesheet">
+ 	<script src="/app/static/js/angularjs/v.1.3.15/angular.js"></script>
+    <script src="/app/static/js/angular-ui.router/angular-ui-router.js"></script>
+    <script src="js/controller.js"></script>
+    <script src="dr1/mydir.js"></script>
+</head>
+<body ng-controller="mainCtr">
+<nav class="navbar navbar-inverse  navbar-static-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" style="color:#EEEEEE;" href="#">Hello World-AngularUI</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="/app/angular/AngularDemo/index.html">ui-bootstrap</a></li>
+                <li class="active"><a href="/app/angular/test/test.html">指令测试页面</a></li>
+              </ul>
+        </div>
+    </div>
+</nav>
+<div ng-class="mainCtr" class="container">
+	<h3>1.说明--<a href="#" ng-click="isshow=!isshow" >收起</a></h3>
+	<ul ng-show="!isshow">
+    	<li>
+                <pre>
+                   Directive的所有属性   *必填
+                   
+                   angular.module("mydir.myTa").directive("myTa",function(){
+                    return{
+                        restrict:'E',    *
+                        replace: false, 
+                        template:'&lt;div&gt&lt;/div&gt',
+                        templateUrl :"..url",
+                        scope:false,
+                        controller: function($scope, $element){ .... },
+                        require: '^tabs',   //另一个指令名字
+                        transclude: true, 
+                        link :function(scope, element, attrs){},
+                        compile:function($scope, $element){
+                              return {  
+                       　　　　　　pre: function preLink(scope, iElement, iAttrs, controller) { ... },  
+                       　　　　　　post: function postLink(scope, iElement, iAttrs, controller) { ... }  
+                       　　　　}  
+                        }
+                    }
+                 })
+                </pre>
+         <ul>
+             <h4 class="text-primary">  compile阶段进行标签解析和变换，link阶段进行数据绑定等操作</h4>
+         	<li>
+            	<h4 class="text-primary">restrict</h4> - EACM的子集的字符串，它限制directive为指定的声明方式。如果省略的话，directive将仅仅允许通过属性声明：
+            	<img src="dr1/direct.png" ><br> 
+                <h4 class="text-primary">replace</h4> - 如果设置为true，那么模版将会替换当前元素，而不是作为子元素添加到当前元素中。（注：为true时，模版必须有一个根节点）<br>
+                <h4 class="text-primary">templateUrl</h4> - 与template基本一致，但模版通过指定的url进行加载。因为模版加载是异步的，所以compilation、linking都会暂停，等待加载完毕后再执行。<br>
+                <h4 class="text-primary">scope</h4> - 如果设置为：<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;true - 将为这个directive创建一个新的scope。<br>
+                 &nbsp;&nbsp;&nbsp;&nbsp;{}(object hash) - 将创建一个新的、独立(isolate)的scope。<br>
+                    <pre>
+                    	&lt;div my-directive name="myName" age="myAge" sex="male" say="say()"&gt;&lt;/div&gt;
+                        scope: {
+                            name: '=', 
+                            age: '=',
+                            sex: '@',
+                            say: '&'
+                        }
+                        scope: {
+                            name: '=name', 
+                            age: '=age',
+                            sex: '@sex',
+                            say: '&say'
+                        }
+                    </pre>
+                    <table class="table table-bordered">
+                    	<tr>
+                        	<td>符号</td>
+                            <td>表示</td>
+                        </tr>
+                        <tr>
+                        	<td>＝</td>
+                            <td>＝或＝attr- 指令中的属性取值为controller中对应$scope上属性的取值，可用于双向数据的绑定</td>
+                        </tr>
+                        <tr>
+                        	<td>@</td>
+                            <td>@或@attr- 指令中的取值为html中的字面量/直接量；</td>
+                        </tr>
+                        <tr>
+                        	<td>&</td>
+                            <td>&或＝&attr- 指令中的取值为Contoller中对应$scope上的属性，但是这属性必须为一个函数回调</td>
+                        </tr>
+                    </table>
+                    <h4 class="text-primary">controller</h4> - controller 构造函数。controller会在pre-linking步骤之前进行初始化，并允许其他directive通过指定名称的require进行共享（看下面的require属性）。这将允许directive之间相互沟通，增强相互之间的行为。controller默认注入了以下本地对象：<br>
+    $scope - 与当前元素结合的scope<br>
+    $element - 当前的元素<br>
+    $attrs - 当前元素的属性对象<br>
+    $transclude - 一个预先绑定到当前转置scope的转置linking function :function(cloneLinkingFn)。(A transclude linking    function pre-bound to the correct transclusion scope)<br>
+    <h4 class="text-primary">require</h4>请求另外的controller，传入当前directive的linking function中。require需要传入一个directive controller的名称。如果找不到这个名称对应的controller，那么将会抛出一个error。名称可以加入以下前缀：<br>
+? - 不要抛出异常。这使这个依赖变为一个可选项。<br>
+^ - 允许查找父元素的controller<br>
+<h4 class="text-primary">transclude</h4>
+	transclude-true自定义的标签内部的内容会保持不变
+            </li>
+         </ul>
+        </li>
+    </ul>
+	<h3>2.测试</h3>
+	<myTa></myTa>
+
+    
+</div>
+</body>
+</html>
